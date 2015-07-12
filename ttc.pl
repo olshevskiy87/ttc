@@ -5,15 +5,20 @@ use warnings;
 use Carp;
 use Term::ANSIColor;
 use English qw(-no_match_vars);
+use Getopt::Long;
 
-my $ww_file = 'wrong_words';
-
-unless (-e $ww_file) {
-    croak "file $ww_file does not exist!\n";
+my $ww_path = 'wrong_words';
+unless (GetOptions("ww_path=s" => \$ww_path)) {
+    croak("error in command line arguments\n");
     exit 1;
 }
 
-open my $fh, '<', $ww_file or croak $ERRNO;
+unless (-e $ww_path) {
+    croak "file $ww_path does not exist!\n";
+    exit 1;
+}
+
+open my $fh, '<', $ww_path or croak $ERRNO;
 my @wrong_words = <$fh>;
 close $fh;
 
