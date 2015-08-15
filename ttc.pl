@@ -29,7 +29,7 @@ my $chain = join('|', @wrong_words);
 my ($pattern, @matches);
 while (<>) {
     chomp;
-    if (@matches = $_ =~ /\b($chain)\b/g) {
+    if (@matches = $_ =~ /\b($chain)\b/gi) {
         foreach my $match (@matches) {
             printf qq{%s:%s [%s] "%s"\n}
                 , colored($ARGV, 'yellow')
