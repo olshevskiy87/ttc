@@ -2,23 +2,39 @@
 
 use strict;
 use warnings;
-use Carp;
+
 use Term::ANSIColor;
-use English qw(-no_match_vars);
 use Getopt::Long;
+use File::Find;
 
 my $ww_path = 'wrong_words';
-unless (GetOptions("ww_path=s" => \$ww_path)) {
-    croak("error in command line arguments\n");
+my $path = '.';
+unless (
+    GetOptions(
+        "ww_path=s" => \$ww_path,
+        "path=s"    => \$path
+    )
+) {
+    print("error in command line arguments\n");
     exit 1;
 }
+
+my @fnames = ();
+sub wanted {
+    return if ! -f "$_";
+    return if $File::Find::dir =~ / \/\.git\/? /x;
+    return if $_ =~ /\.(o|so|po|exe)$/;
+
+    push @fnames, $File::Find::dir.'/'.$_;
+};
+find(\&wanted, $path);
 
 unless (-e $ww_path) {
-    croak "file $ww_path does not exist!\n";
+    print "file $ww_path does not exist!\n";
     exit 1;
 }
 
-open my $fh, '<', $ww_path or croak $ERRNO;
+open my $fh, '<', $ww_path or print $!;
 my @wrong_words = <$fh>;
 close $fh;
 
@@ -27,16 +43,19 @@ chomp @wrong_words;
 my $chain = join('|', @wrong_words);
 
 my ($pattern, @matches);
-while (<>) {
-    chomp;
-    if (@matches = $_ =~ /\b($chain)\b/gi) {
-        foreach my $match (@matches) {
-            printf qq{%s:%s [%s] "%s"\n}
-                , colored($ARGV, 'yellow')
-                , $NR
-                , colored($match, 'red')
-                , $_;
+foreach my $fname (@fnames) {
+    open (my $FH, '<', $fname);
+    while (<$FH>) {
+        chomp;
+        if (@matches = $_ =~ /\b($chain)\b/gi) {
+            foreach my $match (@matches) {
+                printf qq{%s:%s [%s] "%s"\n}
+                    , colored($fname, 'yellow')
+                    , $.
+                    , colored($match, 'red')
+                    , $_;
+            }
         }
     }
+    close $FH;
 }
-
