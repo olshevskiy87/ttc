@@ -9,13 +9,22 @@ use File::Find;
 
 my $ww_path = 'wrong_words';
 my $path = '.';
+
 unless (
     GetOptions(
         "ww_path=s" => \$ww_path,
         "path=s"    => \$path
     )
 ) {
-    print("error in command line arguments\n");
+    print qq{ttc - tiny typos checker
+
+Usage:
+    ttc [options]
+
+Options:
+  - ww_path      path to the wrong words file
+  - path         folder or file to check
+};
     exit 1;
 }
 
