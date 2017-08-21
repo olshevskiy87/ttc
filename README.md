@@ -27,5 +27,6 @@ if you have your own file with wrong words run
 license
 -------
 
-Copyright (c) 2015 - 2016 Dmitriy Olshevskiy. MIT LICENSE.
+Copyright (c) 2015 - 2017 Dmitriy Olshevskiy. MIT LICENSE.
+
 See LICENSE for details.
