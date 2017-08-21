@@ -30,9 +30,9 @@ Options:
 
 my @fnames = ();
 sub wanted {
-    return if ! -f "$_";
+    return if ! -f "$_" or -B "$_";
     return if $File::Find::dir =~ / \/\.git\/? /x;
-    return if $_ =~ /\.(o|so|po|exe)$/;
+    return if $_ =~ /\.(po)$/;
 
     push @fnames, $File::Find::dir.'/'.$_;
 };
