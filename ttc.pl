@@ -3,12 +3,16 @@
 use strict;
 use warnings;
 
+use Cwd 'abs_path';
 use Term::ANSIColor;
 use Getopt::Long;
 use File::Find;
+use File::Basename;
+use File::Spec::Functions 'catfile';
 
-my $ww_path = 'wrong_words';
-my $path = '.';
+my $script_dir = dirname(Cwd::abs_path($0));
+my $ww_path = catfile($script_dir, 'wrong_words');
+my $path = $script_dir;
 
 unless (
     GetOptions(
