@@ -7,6 +7,7 @@ dependencies
 perl modules:
 - Term::ANSIColor
 - File::Find
+- File::Path::Expand
 - Getopt::Long
 
 usage

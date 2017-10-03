@@ -8,18 +8,14 @@ use Term::ANSIColor;
 use Getopt::Long;
 use File::Find;
 use File::Basename;
+use File::Path::Expand;
 use File::Spec::Functions 'catfile';
 
 my $script_dir = dirname(Cwd::abs_path($0));
 my $ww_path = catfile($script_dir, 'wrong_words');
-my $path = $script_dir;
+my $path = undef;
 
-unless (
-    GetOptions(
-        "ww_path=s" => \$ww_path,
-        "path=s"    => \$path
-    )
-) {
+sub usage {
     print qq{ttc - tiny typos checker
 
 Usage:
@@ -32,6 +28,20 @@ Options:
     exit 1;
 }
 
+unless (
+    GetOptions(
+        "ww_path=s" => \$ww_path,
+        "path=s"    => \$path
+    )
+) {
+    usage();
+}
+
+if (!defined($path)) {
+    print qq{error: option "path" is not defined\n\n};
+    usage();
+}
+
 my @fnames = ();
 sub wanted {
     return if ! -f "$_" or -B "$_";
@@ -40,7 +50,7 @@ sub wanted {
 
     push @fnames, $File::Find::dir.'/'.$_;
 };
-find(\&wanted, $path);
+find(\&wanted, expand_filename($path));
 
 unless (-e $ww_path) {
     print "file $ww_path does not exist!\n";
